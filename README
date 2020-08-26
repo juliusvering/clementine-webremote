@@ -4,12 +4,12 @@ Instructions:
  - Uncompress it.
  - Optional: Set your playlist-directory in config.py
  - Launch with: ./clementineWebRemote.py (or with ./clementineWebRemote.py --port 3000)
- - If you get an error, try launching it with: python2 http.py --port 3000
+ - If you get an error, try launching it with: python3 httputils.py --port 3000
  - Open in your browser: http://<host>:3000
 
 Requirements:
- - Python2
- - python-qt4-dbus 
+ - Python3
+ - pydbus
  - Clementine
 
 http://code.google.com/p/clementine-webremote/
@@ -18,6 +18,9 @@ Credit for the remove-track icon "image/cross_300.png" goes to user OCAL on clke
 and is used under Creative Commons CC0 public domain dedication.
 
 History:
+
+1.0
+ * Updated to Python 3 and using pydbus
 
 0.3.01
  * Fixed utf-8 encoding for non-ajax components.
