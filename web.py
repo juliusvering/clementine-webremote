@@ -28,12 +28,12 @@ class Web:
 	# TODO: restrucutre code to avoid need for 'info'
 	def initInfo(self,info):
 		self.info = info
-		if not(self.info.has_key('album')):
+		if 'album' not in self.info:
 			#self.info['album']="Unknown album"
 			self.info['album']=""
-		if not(self.info.has_key('title')):
+		if 'title' not in self.info:
 			self.info['title']="Unknown title"
-		if not(self.info.has_key('artist')):
+		if 'artist' not in self.info:
 			#self.info['artist']="Unknown artist"
 			self.info['artist']=""
 		return
@@ -44,13 +44,13 @@ class Web:
 		self.clementine = clementine_driver
 		self.backend = backend
 		
-		outputFile.write(self.PrintHeader())
-		outputFile.write(self.PrintInfo())
-		outputFile.write(self.PrintCover())
-		outputFile.write(self.PrintControls())
-		outputFile.write(self.PrintTracklist())
-		outputFile.write(self.PrintPlaylistManipulator())
-		outputFile.write(self.PrintFooter())
+		outputFile.write(self.PrintHeader().encode('utf-8'))
+		outputFile.write(self.PrintInfo().encode('utf-8'))
+		outputFile.write(self.PrintCover().encode('utf-8'))
+		outputFile.write(self.PrintControls().encode('utf-8'))
+		outputFile.write(self.PrintTracklist().encode('utf-8'))
+		outputFile.write(self.PrintPlaylistManipulator().encode('utf-8'))
+		outputFile.write(self.PrintFooter().encode('utf-8'))
 	#------	End of printWebUI()
     
 	def PrintHeader(self):
@@ -63,7 +63,7 @@ class Web:
 			<meta charset='utf-8'>\
 			<meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>\n\
 			<link rel='stylesheet' href='style.css' type='text/css' media='screen' />\n\
-			<title>" + self.info['artist'].encode('utf-8') + " - " + self.info['title'].encode('utf-8') + " - Clementine Web Remote</title>\n\
+			<title>" + self.info['artist'] + " - " + self.info['title'] + " - Clementine Web Remote</title>\n\
 			<script type='text/javascript'>\n\
 				var cur='';\
 				function loadXMLDoc(firstRun)\n\
@@ -106,15 +106,15 @@ class Web:
 		#return cover + "\
 		#<img class='cover' src='" + str(random.random()) + ".jpg' alt='" + self.info['album'].encode('utf-8') + "'id='cover' />"
 		return "\
-		<img class='cover' src='" + str(random.random()) + ".jpg' alt='" + self.info['album'].encode('utf-8') + "' id='cover' />"
+		<img class='cover' src='" + str(random.random()) + ".jpg' alt='" + self.info['album'] + "' id='cover' />"
 	#------	End of PrintCover()
     
 	def PrintInfo(self):
-		title = self.info['title'].encode('utf-8')
+		title = self.info['title']
 		return "\
 		<div class='info' id='info'>\n\
-			<span class='artist'>" + self.info['artist'].encode('utf-8') + "</span><br />\
-			" + self.info['album'].encode('utf-8') + "<br />\
+			<span class='artist'>" + self.info['artist'] + "</span><br />\
+			" + self.info['album'] + "<br />\
 			" + title + "<br />\
 		</div>\n"
 	#------	End of PrintInfo()
@@ -167,7 +167,7 @@ class Web:
 			emphNoneTail = "</i></b>"
 			
 		htmlReply += emphTrackHead + "<a class='tracklist' href='?action=setRepeat&value=track'>Track<a>" + emphTrackTail
-    		htmlReply += " - " + emphPlaylistHead + "<a class='tracklist' href='?action=setRepeat&value=playlist'>Playlist<a>" + emphPlaylistTail
+		htmlReply += " - " + emphPlaylistHead + "<a class='tracklist' href='?action=setRepeat&value=playlist'>Playlist<a>" + emphPlaylistTail
 		htmlReply += " - " + emphNoneHead + "<a class='tracklist' href='?action=setRepeat&value=none'>No Repeat<a>" + emphNoneTail
 		
 		htmlReply += "</span>"
@@ -243,11 +243,11 @@ class Web:
 		htmlReply = ""
 		
 		htmlTrackNo = str(int(thisTrack)+1)
-		htmlArtistTitle = "<a href='?action=changeTrack&value=" + str(thisTrack).encode('utf-8')
-		htmlArtistTitle += "' id='track" + str(thisTrack).encode('utf-8') + "'>"
+		htmlArtistTitle = "<a href='?action=changeTrack&value=" + str(thisTrack)
+		htmlArtistTitle += "' id='track" + str(thisTrack) + "'>"
 		htmlArtistTitle += trackMetaData['artist'] + trackMetaData['title'] + "</a>"
 		htmlTime = trackMetaData['time']
-		htmlOptions = "<a href='?action=removeTrack&value=" + str(thisTrack).encode('utf-8') + "'>"
+		htmlOptions = "<a href='?action=removeTrack&value=" + str(thisTrack) + "'>"
 		htmlOptions += "<img src=\"images/cross_12.png\" alt=\"Remove track\" height=\"12\" width=\"12\" />" 
 		htmlOptions +="</a>"
 		
@@ -293,7 +293,7 @@ class Web:
 		listLength = int(self.clementine.GetListLength())
 		currentTrack = int(self.clementine.GetTrackNum())
 		htmlReply = ""
-		htmlReply = "<p><a class='tracklist' href='#track" + str(max(currentTrack-10,0)).encode('utf-8') + "'>Jump to current track</a></p>"
+		htmlReply = "<p><a class='tracklist' href='#track" + str(max(currentTrack-10,0)) + "'>Jump to current track</a></p>"
 		htmlReply += "<div class='outerTracklistDiv' id='tracklistID'>"
 		htmlReply += "<span class='tracklist'>\n\n"
 		
@@ -329,8 +329,8 @@ class Web:
 		htmlReply += "\n<p>---- Append playlist: ----<br/>" 
 		for filename in os.listdir(playlistDirectory):
 			if filename.endswith(".m3u"):
-				htmlReply += "<a href='?action=addTrackList&value=" + str(filename).encode('utf-8') + "'>"
-				htmlReply += str(filename).encode('utf-8')
+				htmlReply += "<a href='?action=addTrackList&value=" + str(filename) + "'>"
+				htmlReply += str(filename)
 				htmlReply += "</a><br/>"
 		htmlReply += "</p></div>"
 		#-------------------------------------------------------------------------------------------------------
@@ -341,8 +341,8 @@ class Web:
 		htmlReply += "\n<p>---- Replace playlist: ----<br/>" 
 		for filename in os.listdir(playlistDirectory):
 			if filename.endswith(".m3u"):
-				htmlReply +="<a href='?action=replaceTrackList&value=" + str(filename).encode('utf-8') + "'>"
-				htmlReply += str(filename).encode('utf-8')
+				htmlReply +="<a href='?action=replaceTrackList&value=" + str(filename) + "'>"
+				htmlReply += str(filename)
 				htmlReply += "</a><br/>"
 		htmlReply += "</p></div>"
 		#--------------------------------------------------------------------------------------------------------

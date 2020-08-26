@@ -15,7 +15,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #import random
-import urlparse
+import urllib
 import unicodedata
 import os
 import time
@@ -34,9 +34,9 @@ class Functionality:
 		self.value = ""
 		if '?' in http_path:
 			http_path, tmp = http_path.split('?', 1)
-			cmd = urlparse.parse_qs(tmp)
+			cmd = urllib.parse.parse_qs(tmp)
 			self.action = self.cleanParameter(cmd['action'])
-			if cmd.has_key('value'):	# value is generally track-ID or playlist name
+			if 'value' in cmd:	# value is generally track-ID or playlist name
 				self.value = self.cleanParameter(cmd['value'])
 		return
 	#------	End of __init__
@@ -72,7 +72,7 @@ class Functionality:
 			self.clementine.VolumeDown()
 			# 
 		elif self.action == "changeTrack":
-			print self.value
+			print(self.value)
 			self.clementine.setNewTrack(int(self.value))
 			# 
 		elif self.action == "clearTrackList":

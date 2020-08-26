@@ -14,10 +14,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import dbus
-import dbus.service
+import pydbus as dbus
 import sys
-from dbus.mainloop.qt import DBusQtMainLoop
 
 class Clementine:
   
@@ -34,74 +32,84 @@ class Clementine:
 			#sys.exit(-1)
 		
 		# Handle exception in http.py
-		self.server = self.bus.get_object('org.mpris.clementine', '/Player')
-		self.tracklist = self.bus.get_object('org.mpris.clementine', '/TrackList')
-		self.mpris2 = self.bus.get_object('org.mpris.clementine', '/org/mpris/MediaPlayer2')
-		self.mpris2player = dbus.Interface(self.mpris2, dbus_interface='org.mpris.MediaPlayer2.Player')
-		self.propertiesManager = dbus.Interface(self.mpris2, 'org.freedesktop.DBus.Properties')
+		self.mpris = self.bus.get('org.mpris.MediaPlayer2.clementine', '/org/mpris/MediaPlayer2')
+		#self.player = dbus.Interface(self.mpris, dbus_interface='org.mpris.MediaPlayer2.Player')
+		#self.tracklist = dbus.Interface(self.mpris, dbus_interface='org.mpris.MediaPlayer2.TrackList')
+		#self.propertiesManager = dbus.Interface(self.mpris, 'org.freedesktop.DBus.Properties')
 	
 	def Next(self):
-		self.server.Next()
+		self.mpris.Next()
 		return True
   
 	def Prev(self):
-		self.server.Prev()
+		self.mpris.Previous()
 		return True
     
 	def Play(self):
-		self.server.Play()
+		self.mpris.Play()
 		return True
 	
 	def Stop(self):
-		self.server.Stop()
+		self.mpris.Stop()
 		return True
 		
 	def Pause(self):
-		self.server.Pause()
+		self.mpris.Pause()
 		return True
 	
 	def GetInfo(self):
-		return self.server.GetMetadata()
+		return self.mpris.Metadata
+		#return self.propertiesManager.Get('org.mpris.MediaPlayer2.Player', 'Metadata')
+	
+	def GetCover(self):
+		metadata = self.mpris.Metadata
+		if 'arturl' not in metadata:
+			return 0
+		else:
+			return metadata['arturl']
 	
 	def VolumeUp(self):
-		self.server.VolumeUp(10)
+		self.mpris.Volume = min(100, self.mpris.Volume + 10)
 		return True
 	
 	def VolumeDown(self):
-		self.server.VolumeDown(10)
+		self.mpris.Volume = max(0, self.mpris.Volume - 10)
 		return True
 	
 	def GetTrackNum(self):
-		return self.tracklist.GetCurrentTrack()
+		metadata = self.mpris.Metadata
+		if 'trackid' not in metadata:
+			return 0
+		else:
+			return metadata['trackid']
 	
 	def GetListLength(self):
-		return self.tracklist.GetLength()
+		return len(self.mpris.Tracks)
 	
 	def GetTrackData(self,trackNumber):
-		return self.tracklist.GetMetadata(trackNumber)
+		return ""
+		#return self.tracklist.GetTracksMetadata([trackNumber])[0]
 	
 	def setNewTrack(self,trackNumber):
-		self.tracklist.PlayTrack(trackNumber)
+		self.mpris.GoTo(trackNumber)
 	
 	def removeTrack(self,trackNumber):
-		self.tracklist.DelTrack(trackNumber)
+		self.mpris.RemoveTrack(trackNumber)
 	
 	def loadTrackList(self,url):
-		self.mpris2player.OpenUri(url)
+		self.mpris.OpenUri(url)
 		
 	def setShuffle(self,mode):
-		self.propertiesManager.Set('org.mpris.MediaPlayer2.Player', 'Shuffle', mode)
-		#self.mpris2player.Shuffle(mode)
+		self.mpris.Shuffle = mode
 		
 	def getShuffle(self):
-		return self.propertiesManager.Get('org.mpris.MediaPlayer2.Player', 'Shuffle')
-		#return self.mpris2player.Shuffle()
+		return self.mpris.Shuffle
 		
 	def setRepeat(self,mode):
-		self.propertiesManager.Set('org.mpris.MediaPlayer2.Player', 'LoopStatus', mode)
+		self.mpris.LoopStatus = mode
 		
 	def getRepeat(self):
-		return self.propertiesManager.Get('org.mpris.MediaPlayer2.Player', 'LoopStatus')
+		return self.mpris.LoopStatus
 		
 		
 		
